@@ -1,0 +1,92 @@
+#!/bin/sh
+#
+# tigase-server	Starts Tigase XMPP server.
+#
+# chkconfig:	2345 85 15
+# description:	Tigase Sever
+#
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get service config
+if [ -f /etc/sysconfig/tigase-server ]; then
+	. /etc/sysconfig/tigase-server
+fi
+
+init_derby_db () {
+	show "Initializing Tigase Server derby database: %s" $1 ; started
+	if setuidgid -s jabber /usr/share/tigase-server/scripts/derby-db-create.sh $1 >/dev/null ; then
+		show "Initializing Tigase Server derby database" ; ok
+	else
+		show "Initializing Tigase Server derby database" ; fail
+	fi
+}
+
+start() {
+	# Check if the service is already running?
+	if [ -f /var/lock/subsys/tigase-server ]; then
+		msg_already_running "tigase-server"
+		return
+	fi
+	if grep -q '^--user-db=derby' /etc/tigase-server/init.properties ; then
+		DB_PATH=$(awk -F'=jdbc:derby:' '/^--user-db-uri=/ { print $2 }' \
+							/etc/tigase-server/init.properties)
+		if [ -n "$DB_PATH" -a ! -e $DB_PATH ] ; then
+			init_derby_db $DB_PATH
+		fi
+	fi
+	msg_starting "tigase-server"
+	emit starting JOB=tigase-server
+	if [ -z "$TIGASE_CONSOLE_LOG" ] ; then
+		TIGASE_CONSOLE_LOG=/var/log/tigase-server/tigase-console.log
+	fi
+	export TIGASE_CONSOLE_LOG
+	daemon --fork /usr/bin/tigase-server
+	if [ "$RETVAL" = 0 ] ; then
+		touch /var/lock/subsys/tigase-server
+		emit --no-wait started JOB=tigase-server
+	fi
+}
+
+stop() {
+	if [ ! -f /var/lock/subsys/tigase-server ]; then
+		msg_not_running "tigase-server"
+		return
+	fi
+	msg_stopping "tigase-server"
+	emit stopping JOB=tigase-server
+	killproc tigase-server
+	emit --no-wait stopped JOB=tigase-server
+	rm -f /var/lock/subsys/tigase-server >/dev/null 2>&1
+}
+
+upstart_controlled
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  reload|force-reload)
+	stop
+	start
+	;;
+  status)
+	status --pidfile /var/run/tigase-server.pid tigase-server
+	exit $?
+	;;
+  *)
+	msg_usage "$0 {start|stop|restart|status}"
+	exit 3
+esac
+
+exit $RETVAL

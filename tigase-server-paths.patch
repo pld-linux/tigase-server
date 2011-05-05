@@ -1,0 +1,25 @@
+diff -dur tigase-server-5.0.0-b2135.orig/etc/init.properties tigase-server-5.0.0-b2135/etc/init.properties
+--- tigase-server-5.0.0-b2135.orig/etc/init.properties	2010-03-20 22:06:06.000000000 +0100
++++ tigase-server-5.0.0-b2135/etc/init.properties	2011-05-05 14:28:15.000000000 +0200
+@@ -2,4 +2,6 @@
+ --admins=admin@$HOST_NAME
+ --virt-hosts = $HOST_NAME
+ --debug=server
+-
++--user-db=derby
++--user-db-uri=jdbc:derby:/var/lib/tigase-server/derby
++--script-dir=/var/lib/tigase-server/scripts
+diff -dur tigase-server-5.0.0-b2135.orig/etc/tigase.conf tigase-server-5.0.0-b2135/etc/tigase.conf
+--- tigase-server-5.0.0-b2135.orig/etc/tigase.conf	2010-03-20 22:06:06.000000000 +0100
++++ tigase-server-5.0.0-b2135/etc/tigase.conf	2011-05-05 14:29:00.000000000 +0200
+@@ -1,8 +1,7 @@
+ ENC="-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8"
+ DRV="-Djdbc.drivers=com.mysql.jdbc.Driver:org.postgresql.Driver:org.apache.derby.jdbc.EmbeddedDriver"
+ #GC="-XX:+UseBiasedLocking -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelCMSThreads=2"
+-JAVA_HOME="${JDKPath}"
++#JAVA_HOME="${JDKPath}"
+ CLASSPATH=""
+ JAVA_OPTIONS="${GC} ${ENC} ${DRV} -server -Xms100M -Xmx200M -XX:PermSize=32m -XX:MaxPermSize=256m -XX:MaxDirectMemorySize=128m "
+-TIGASE_CONFIG="etc/tigase.xml"
+-TIGASE_OPTIONS=" --property-file etc/init.properties "
++TIGASE_OPTIONS=" --property-file /etc/tigase-server/init.properties "

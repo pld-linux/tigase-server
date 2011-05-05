@@ -1,0 +1,4 @@
+# Customized settings for Tigase XMPP server
+
+# Define nice level for Tigase
+#SERVICE_RUN_NICE_LEVEL="+0"
