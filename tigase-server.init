@@ -38,11 +38,7 @@ start() {
 	fi
 	msg_starting "tigase-server"
 	emit starting JOB=tigase-server
-	if [ -z "$TIGASE_CONSOLE_LOG" ] ; then
-		TIGASE_CONSOLE_LOG=/var/log/tigase-server/tigase-console.log
-	fi
-	export TIGASE_CONSOLE_LOG
-	daemon --fork /usr/bin/tigase-server
+	daemon tigase-server start
 	if [ "$RETVAL" = 0 ] ; then
 		touch /var/lock/subsys/tigase-server
 		emit --no-wait started JOB=tigase-server
@@ -58,7 +54,7 @@ stop() {
 	emit stopping JOB=tigase-server
 	killproc tigase-server
 	emit --no-wait stopped JOB=tigase-server
-	rm -f /var/lock/subsys/tigase-server >/dev/null 2>&1
+	rm -f /var/lock/subsys/tigase-server
 }
 
 upstart_controlled

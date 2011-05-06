@@ -1,0 +1,147 @@
+diff -dur tigase-server-5.0.0-b2135.orig/scripts/tigase.sh tigase-server-5.0.0-b2135/scripts/tigase.sh
+--- tigase-server-5.0.0-b2135.orig/scripts/tigase.sh	2010-03-20 22:06:06.000000000 +0100
++++ tigase-server-5.0.0-b2135/scripts/tigase.sh	2011-05-06 09:47:17.000000000 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ ##
+ ##  Tigase Jabber/XMPP Server
+ ##  Copyright (C) 2004-2007 "Artur Hefczyc" <artur.hefczyc@tigase.org>
+@@ -37,16 +37,24 @@
+ # If not given the script will try to search for the file and if
+ # not found default parameters will be used.
+ 
+-function usage()
++usage()
+ {
+   echo "Usage: $0 {start|stop|run|restart|check} [params-file.conf]"
+   exit 1
+ }
+ 
++. /usr/share/java-utils/java-functions
++set_jvm
++TIGASE_HOME=/usr/share/tigase-server
++TIGASE_CONFIG=/etc/tigase-server/tigase.xml
++TIGASE_PID=/var/run/tigase-server.pid
++
+ if [ -z "${2}" ] ; then
+   DEF_PARAMS="tigase.conf"
++  if [ -f "/etc/tigase-server/${DEF_PARAMS}" ] ; then
++		TIGASE_PARAMS="/etc/tigase-server/${DEF_PARAMS}"
++  elif [ -f "/etc/conf.d/${DEF_PARAMS}" ] ; then
+   # Gentoo style config location
+-  if [ -f "/etc/conf.d/${DEF_PARAMS}" ] ; then
+ 		TIGASE_PARAMS="/etc/conf.d/${DEF_PARAMS}"
+   elif [ -f "/etc/${DEF_PARAMS}" ] ; then
+ 		TIGASE_PARAMS="/etc/${DEF_PARAMS}"
+@@ -97,12 +105,12 @@
+ fi
+ if [ -z "${TIGASE_PID}" ] ; then
+   if [ -w "${TIGASE_HOME}/logs/" ] ; then
+-		TIGASE_PID="${TIGASE_HOME}/logs/tigase.pid"
++		TIGASE_PID="${TIGASE_HOME}/logs/tigase-server.pid"
+   else
+ 		if [ -w "/var/run/" ] ; then
+-	    TIGASE_PID="/var/run/tigase.pid"
++	    TIGASE_PID="/var/run/tigase-server.pid"
+ 		else
+-	    TIGASE_PID="/var/tmp/tigase.pid"
++	    TIGASE_PID="/var/tmp/tigase-server.pid"
+ 		fi
+   fi
+ fi
+@@ -137,50 +145,30 @@
+ 
+ CLASSPATH="`ls -d ${TIGASE_HOME}/libs/*.jar 2>/dev/null | grep -v wrapper | tr '\n' :`${CLASSPATH}"
+ 
+-TIGASE_CMD="${JAVA} ${JAVA_OPTIONS} -cp ${CLASSPATH} ${TIGASE_RUN}"
++TIGASE_CMD="${JAVA}"
++TIGASE_ARGS="${JAVA_OPTIONS} -cp ${CLASSPATH} ${TIGASE_RUN}"
+ 
+ cd "${TIGASE_HOME}"
+ 
+ case "${1}" in
+   start)
+-    echo "Starting Tigase: "
+-
+-    if [ -f ${TIGASE_PID} ] && kill -0 $(<${TIGASE_PID}) 2>/dev/null
+-    then
+-      echo "Already Running!!"
+-      exit 1
+-    fi
+-
+-    echo "STARTED Tigase `date`" >> ${TIGASE_CONSOLE_LOG}
+-
+-    nohup sh -c "exec $TIGASE_CMD >>${TIGASE_CONSOLE_LOG} 2>&1" >/dev/null &
+-    echo $! > $TIGASE_PID
+-    echo "Tigase running pid="`cat $TIGASE_PID`
++    start-stop-daemon --start \
++	    --exec "$TIGASE_CMD" \
++	    --pidfile=${TIGASE_PID} \
++	    --make-pidfile \
++	    --chuid jabber \
++	    --user jabber \
++	    --group jabber \
++	    --background \
++	    -- $TIGASE_ARGS
+     ;;
+ 
+   stop)
+-    PID=`cat $TIGASE_PID 2>/dev/null`
+-    if [ -z "$PID" ] ; then
+-      echo "Tigase is not running."
+-      exit 0
+-    fi
+-    echo "Shutting down Tigase: $PID"
+-    kill $PID 2>/dev/null
+-    for ((i=1; i <= 30; i++)) ; do
+-      if ps -p $PID > /dev/null ; then
+-        echo "$i. Waiting for the server to terminate..."
+-        sleep 1
+-      else
+-        echo "$i. Tigase terminated."
+-        break
+-      fi
+-    done
+-    if ps -p $PID > /dev/null ; then
+-      echo "Forcing the server to terminate."
+-      kill -9 $PID 2>/dev/null
+-    fi
+-    rm -f $TIGASE_PID
+-    echo "STOPPED `date`" >>${TIGASE_CONSOLE_LOG}
++    start-stop-daemon --stop \
++	    --user jabber \
++	    --exec "$TIGASE_CMD" \
++	    --retry 15 \
++	    --pidfile=$TIGASE_PID && rm -f $TIGASE_PID
+     ;;
+ 
+   restart)
+@@ -192,13 +180,17 @@
+   run)
+     echo "Running Tigase: "
+ 
+-    if [ -f $TIGASE_PID ]
++    if [ -f $TIGASE_PID ] && kill -0 "$(cat $TIGASE_PID)" 2>/dev/null
+     then
+       echo "Already Running!!"
+       exit 1
+     fi
+ 
+-    sh -c "exec $TIGASE_CMD"
++    if [ `id -u` = 0 ] ; then
++	TIGASE_ARGS="-s jabber $TIGASE_CMD $TIGASE_ARGS"
++	TIGASE_CMD=/sbin/setuidgid
++    fi
++    exec "$TIGASE_CMD" $TIGASE_ARGS
+     ;;
+ 
+   check)
+@@ -215,7 +207,6 @@
+     echo "JAVA_CMD        =  $JAVA_CMD"
+     echo "CLASSPATH       =  $CLASSPATH"
+     echo "TIGASE_CMD      =  $TIGASE_CMD"
+-    echo "TIGASE_CONSOLE_LOG  =  $TIGASE_CONSOLE_LOG"
+     echo
+ 
+     if [ -f ${TIGASE_PID} ]

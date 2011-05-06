@@ -6,7 +6,7 @@ Summary:	Open Source Jabber/XMPP Server
 Name:		tigase-server
 Version:	5.0.0
 %define	build_id 2135
-Release:	0.1
+Release:	0.2
 License:	GPL v3
 Group:		Applications/Communications
 # http://www.tigase.org/content/tigase-downloads?fid=2199
@@ -15,9 +15,9 @@ Source0:	%{name}-%{version}-b%{build_id}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.upstart
-Source4:	%{name}.sh
-Source5:	derby-db-create.sh
+Source4:	derby-db-create.sh
 Patch0:		%{name}-paths.patch
+Patch1:		%{name}-start_script.patch
 URL:		http://www.tigase.org/
 BuildRequires:	rpmbuild(macros) >= 1.228
 Requires(postun):	/usr/sbin/groupdel
@@ -77,6 +77,7 @@ Opis zadania Upstart dla %{name}
 %prep
 %setup -q -n %{name}-%{version}-b%{build_id}
 %patch0 -p1
+%patch1 -p1
 
 %build
 
@@ -92,14 +93,15 @@ ln -s %{_sysconfdir}/%{name}/certs $RPM_BUILD_ROOT%{_datadir}/%{name}
 
 cp -R database jars libs $RPM_BUILD_ROOT%{_datadir}/%{name}
 
+install scripts/tigase.sh $RPM_BUILD_ROOT%{_bindir}/tigase-server
+
 ln -s /var/log/tigase $RPM_BUILD_ROOT%{_datadir}/%{name}/logs
 ln -s logs/derby.log $RPM_BUILD_ROOT%{_datadir}/%{name}
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/init/%{name}.conf
-install %{SOURCE4} $RPM_BUILD_ROOT%{_bindir}/%{name}
-install %{SOURCE5} $RPM_BUILD_ROOT%{_datadir}/%{name}/scripts/derby-db-create.sh
+install %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/%{name}/scripts/derby-db-create.sh
 
 
 touch $RPM_BUILD_ROOT/var/log/%{name}/derby.log

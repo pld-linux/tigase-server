@@ -10,7 +10,7 @@ console output
 
 script
 	export TIGASE_CONSOLE_LOG=/var/log/tigase-server/tigase-console.log
-	exec /usr/bin/tigase-server
+	exec /usr/bin/tigase-server run
 end script
 
 # vi: ft=upstart
