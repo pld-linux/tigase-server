@@ -1,0 +1,76 @@
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/config.sh tigase-server-5.1.0-beta2-b2555.src/scripts/config.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/config.sh	2007-07-18 19:38:28.000000000 +0200
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/config.sh	2011-05-09 11:05:07.000000000 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ ##
+ ##  Tigase Jabber/XMPP Server
+ ##  Copyright (C) 2004-2007 "Artur Hefczyc" <artur.hefczyc@tigase.org>
+@@ -23,4 +23,4 @@
+ 
+ CP="jars/tigase-server.jar:/usr/share/jdbc-mysql/lib/jdbc-mysql.jar:libs/tigase-xmltools.jar:libs/tigase-utils.jar"
+ 
+-java -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -cp $CP tigase.conf.Configurator $*
+\ No newline at end of file
++java -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -cp $CP tigase.conf.Configurator $*
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/derby-db-create.sh tigase-server-5.1.0-beta2-b2555.src/scripts/derby-db-create.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/derby-db-create.sh	2009-02-03 23:17:44.000000000 +0100
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/derby-db-create.sh	2011-05-09 11:05:30.000000000 +0200
+@@ -1,6 +1,6 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+-[[ "$1" = "" ]] && \
++[ -z "$1" ] && \
+   echo "Give me a path to the location where you want to have the database created" && \
+   exit 1
+ 
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/machine-check.sh tigase-server-5.1.0-beta2-b2555.src/scripts/machine-check.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/machine-check.sh	2010-09-08 18:35:44.000000000 +0200
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/machine-check.sh	2011-05-09 11:05:58.000000000 +0200
+@@ -1,6 +1,6 @@
+-#!/bin/bash
++#!/bin/sh
+ 
+-function usage() {
++usage() {
+   echo "The script has to be run with following parameters:"
+   echo "$0 hostname username [vhost]"
+   echo "--------------------"
+@@ -9,7 +9,7 @@
+   echo "  vhost    - is a virtual hostname used for the service if different than the hostname"
+ }
+ 
+-function check_dns() {
++check_dns() {
+   if host $1 | grep "not found" > /dev/null ; then
+     echo "WARNING - the $1 does NOT resolve to a valid IP address"
+   else
+@@ -31,7 +31,7 @@
+   fi
+ }
+ 
+-function check_net() {
++check_net() {
+   if ping -q -c 2 -W 100 $1 &> /dev/null ; then
+     echo "OK, The $1 host accessible through the network"
+   else
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/repo.sh tigase-server-5.1.0-beta2-b2555.src/scripts/repo.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/repo.sh	2009-02-20 00:18:59.000000000 +0100
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/repo.sh	2011-05-09 11:06:45.000000000 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ ##
+ ##  Tigase Jabber/XMPP Server
+ ##  Copyright (C) 2004-2007 "Artur Hefczyc" <artur.hefczyc@tigase.org>
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/user_roster.sh tigase-server-5.1.0-beta2-b2555.src/scripts/user_roster.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/user_roster.sh	2008-03-02 11:08:28.000000000 +0100
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/user_roster.sh	2011-05-09 11:06:59.000000000 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/bin/sh
+ ##
+ ##  Tigase Jabber/XMPP Server
+ ##  Copyright (C) 2004-2007 "Artur Hefczyc" <artur.hefczyc@tigase.org>

@@ -1,6 +1,6 @@
-diff -dur tigase-server-5.0.0-b2135.orig/scripts/tigase.sh tigase-server-5.0.0-b2135/scripts/tigase.sh
---- tigase-server-5.0.0-b2135.orig/scripts/tigase.sh	2010-03-20 22:06:06.000000000 +0100
-+++ tigase-server-5.0.0-b2135/scripts/tigase.sh	2011-05-06 09:47:17.000000000 +0200
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/tigase.sh tigase-server-5.1.0-beta2-b2555.src/scripts/tigase.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/tigase.sh	2009-10-23 15:51:43.000000000 +0200
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/tigase.sh	2011-05-09 11:19:58.000000000 +0200
 @@ -1,4 +1,4 @@
 -#!/bin/bash
 +#!/bin/sh
@@ -50,7 +50,12 @@ diff -dur tigase-server-5.0.0-b2135.orig/scripts/tigase.sh tigase-server-5.0.0-b
  		fi
    fi
  fi
-@@ -137,50 +145,30 @@
+@@ -133,54 +141,34 @@
+ 
+ [[ -z "${CLASSPATH}" ]] || CLASSPATH="${CLASSPATH}:"
+ 
+-CLASSPATH="${CLASSPATH}${TIGASE_JAR}"
++CLASSPATH="${CLASSPATH}${TIGASE_JAR}:/usr/share/java/tigase-xmltools.jar:/usr/share/java/tigase-utils.jar:/usr/share/java/mysql-connector-java.jar:/usr/share/java/postgresql.jar"
  
  CLASSPATH="`ls -d ${TIGASE_HOME}/libs/*.jar 2>/dev/null | grep -v wrapper | tr '\n' :`${CLASSPATH}"
  

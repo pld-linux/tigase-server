@@ -1,17 +1,21 @@
-diff -dur tigase-server-5.0.0-b2135.orig/etc/init.properties tigase-server-5.0.0-b2135/etc/init.properties
---- tigase-server-5.0.0-b2135.orig/etc/init.properties	2010-03-20 22:06:06.000000000 +0100
-+++ tigase-server-5.0.0-b2135/etc/init.properties	2011-05-05 14:28:15.000000000 +0200
-@@ -2,4 +2,6 @@
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/etc/init.properties tigase-server-5.1.0-beta2-b2555.src/etc/init.properties
+--- tigase-server-5.1.0-beta2-b2555.src.orig/etc/init.properties	2008-10-28 22:43:21.000000000 +0100
++++ tigase-server-5.1.0-beta2-b2555.src/etc/init.properties	2011-05-09 11:03:59.000000000 +0200
+@@ -2,4 +2,10 @@
  --admins=admin@$HOST_NAME
  --virt-hosts = $HOST_NAME
  --debug=server
 -
++--script-dir=/var/lib/tigase-server/scripts
++--ssl-certs-location=/etc/tigase-server/certs
++basic-conf/logging/java.util.logging.FileHandler.limit=100000000
++basic-conf/logging/java.util.logging.FileHandler.count=20
++basic-conf/logging/java.util.logging.FileHandler.pattern=/var/log/tigase-server/tigase.log
 +--user-db=derby
 +--user-db-uri=jdbc:derby:/var/lib/tigase-server/derby
-+--script-dir=/var/lib/tigase-server/scripts
-diff -dur tigase-server-5.0.0-b2135.orig/etc/tigase.conf tigase-server-5.0.0-b2135/etc/tigase.conf
---- tigase-server-5.0.0-b2135.orig/etc/tigase.conf	2010-03-20 22:06:06.000000000 +0100
-+++ tigase-server-5.0.0-b2135/etc/tigase.conf	2011-05-05 14:29:00.000000000 +0200
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/etc/tigase.conf tigase-server-5.1.0-beta2-b2555.src/etc/tigase.conf
+--- tigase-server-5.1.0-beta2-b2555.src.orig/etc/tigase.conf	2009-11-11 17:31:40.000000000 +0100
++++ tigase-server-5.1.0-beta2-b2555.src/etc/tigase.conf	2011-05-09 10:51:10.000000000 +0200
 @@ -1,8 +1,7 @@
  ENC="-Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8"
  DRV="-Djdbc.drivers=com.mysql.jdbc.Driver:org.postgresql.Driver:org.apache.derby.jdbc.EmbeddedDriver"
@@ -23,3 +27,80 @@ diff -dur tigase-server-5.0.0-b2135.orig/etc/tigase.conf tigase-server-5.0.0-b21
 -TIGASE_CONFIG="etc/tigase.xml"
 -TIGASE_OPTIONS=" --property-file etc/init.properties "
 +TIGASE_OPTIONS=" --property-file /etc/tigase-server/init.properties "
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/config.sh tigase-server-5.1.0-beta2-b2555.src/scripts/config.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/config.sh	2007-07-18 19:38:28.000000000 +0200
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/config.sh	2011-05-09 10:56:44.000000000 +0200
+@@ -21,6 +21,6 @@
+ ##  $Date$
+ ##
+ 
+-CP="jars/tigase-server.jar:/usr/share/jdbc-mysql/lib/jdbc-mysql.jar:libs/tigase-xmltools.jar:libs/tigase-utils.jar"
+-
+-java -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -cp $CP tigase.conf.Configurator $*
++CP="jars/tigase-server.jar:/usr/share/java/mysql-connector-java.jar:/usr/share/java/postgresql.jar:/usr/share/java/tigase-xmltools.jar:/usr/share/java/tigase-utils.jar"
++cd /usr/share/tigase-server/
++java -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -cp $CP tigase.conf.Configurator $*
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/derby-db-create.sh tigase-server-5.1.0-beta2-b2555.src/scripts/derby-db-create.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/derby-db-create.sh	2009-02-03 23:17:44.000000000 +0100
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/derby-db-create.sh	2011-05-09 10:58:55.000000000 +0200
+@@ -4,16 +4,20 @@
+   echo "Give me a path to the location where you want to have the database created" && \
+   exit 1
+ 
++# make it absolute
++path=$(readlink -m "$1")
+ 
+-java -Dij.protocol=jdbc:derby: -Dij.database="$1;create=true" \
++cd /usr/share/tigase-server || exit 1
++
++java -Dij.protocol=jdbc:derby: -Dij.database="$path;create=true" \
+ 		-Dderby.system.home=`pwd` \
+ 		-cp libs/derby.jar:libs/derbytools.jar:jars/tigase-server.jar \
+ 		org.apache.derby.tools.ij database/derby-schema-4.sql
+-java -Dij.protocol=jdbc:derby: -Dij.database="$1" \
++java -Dij.protocol=jdbc:derby: -Dij.database="$path" \
+ 		-Dderby.system.home=`pwd` \
+ 		-cp libs/derby.jar:libs/derbytools.jar:jars/tigase-server.jar \
+ 		org.apache.derby.tools.ij database/derby-schema-4-sp.schema
+-java -Dij.protocol=jdbc:derby: -Dij.database="$1" \
++java -Dij.protocol=jdbc:derby: -Dij.database="$path" \
+ 		-Dderby.system.home=`pwd` \
+ 		-cp libs/derby.jar:libs/derbytools.jar:jars/tigase-server.jar \
+ 		org.apache.derby.tools.ij database/derby-schema-4-props.sql
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/repo.sh tigase-server-5.1.0-beta2-b2555.src/scripts/repo.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/repo.sh	2009-02-20 00:18:59.000000000 +0100
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/repo.sh	2011-05-09 11:01:25.000000000 +0200
+@@ -21,11 +21,13 @@
+ ##  $Date$
+ ##
+ 
+-CP="jars/tigase-server.jar:libs/jdbc-mysql.jar:libs/jdbc-postgresql.jar:libs/tigase-xmltools.jar:libs/tigase-utils.jar"
++CP="jars/tigase-server.jar:/usr/share/java/mysql-connector-java.jar:/usr/share/java/postgresql.jar:/usr/share/java/tigase-xmltools.jar:/usr/share/java/tigase-utils.jar"
+ 
+ D="-server -Xms100M -Xmx1500M -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Djdbc.drivers=com.mysql.jdbc.Driver:org.postgresql.Driver"
+ 
+ MYSQL_REP="-sc tigase.db.jdbc.JDBCRepository -su jdbc:mysql://localhost/nk_200k?user=root&password=mypass"
+ PGSQL_REP="-sc tigase.db.jdbc.JDBCRepository -su jdbc:postgresql://localhost/tigase?user=tigase"
+ 
++cd /usr/share/tigase-server/
++
+ java $D -cp $CP tigase.util.RepositoryUtils $MYSQL_REP $*
+diff -dur tigase-server-5.1.0-beta2-b2555.src.orig/scripts/user_roster.sh tigase-server-5.1.0-beta2-b2555.src/scripts/user_roster.sh
+--- tigase-server-5.1.0-beta2-b2555.src.orig/scripts/user_roster.sh	2008-03-02 11:08:28.000000000 +0100
++++ tigase-server-5.1.0-beta2-b2555.src/scripts/user_roster.sh	2011-05-09 11:02:44.000000000 +0200
+@@ -21,7 +21,7 @@
+ ##  $Date$
+ ##
+ 
+-CP="jars/tigase-server.jar:libs/jdbc-mysql.jar:libs/tigase-xmltools.jar:libs/tigase-utils.jar"
++CP="jars/tigase-server.jar:/usr/share/java/mysql-connector-java.jar:/usr/share/java/postgresql.jar:/usr/share/java/tigase-xmltools.jar:/usr/share/java/tigase-utils.jar"
+ 
+ D="-server -Xms100M -Xmx1500M -Dfile.encoding=UTF-8 -Dsun.jnu.encoding=UTF-8 -Djdbc.drivers=com.mysql.jdbc.Driver:org.postgresql.Driver"
+ 
+@@ -30,4 +30,6 @@
+ S_MYSQL_REP="-sc tigase.db.jdbc.JDBCRepository -su jdbc:mysql://localhost/tigasetest?user=root&password=mypass"
+ S_PGSQL_REP="-sc tigase.db.jdbc.JDBCRepository -su jdbc:postgresql://localhost/tigase?user=tigase"
+ 
++cd /usr/share/tigase-server/
++
+ java $D -cp $CP tigase.util.RepositoryUtils $S_MYSQL_REP -u "$1" -pr

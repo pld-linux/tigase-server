@@ -16,7 +16,7 @@ fi
 
 init_derby_db () {
 	show "Initializing Tigase Server derby database: %s" $1 ; started
-	if setuidgid -s jabber /usr/share/tigase-server/scripts/derby-db-create.sh $1 >/dev/null ; then
+	if setuidgid -s jabber /usr/share/tigase-server/bin/derby-db-create.sh $1 >/dev/null ; then
 		show "Initializing Tigase Server derby database" ; ok
 	else
 		show "Initializing Tigase Server derby database" ; fail
