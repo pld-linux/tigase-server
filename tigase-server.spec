@@ -28,6 +28,7 @@ Source4:	derby-db-create.sh
 Patch0:		%{name}-no_bash.patch
 Patch1:		%{name}-paths.patch
 Patch2:		%{name}-start_script.patch
+Patch3:		%{name}-no_svnversion.patch
 URL:		http://www.tigase.org/
 %{?with_tests:BuildRequires:	ant-junit}
 BuildRequires:	java-tigase-utils
@@ -124,6 +125,10 @@ Kod źródłowy %{name}.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+
+echo "build-no=%{build_id}" >> build.properties
+
 
 %build
 export JAVA_HOME="%{java_home}"

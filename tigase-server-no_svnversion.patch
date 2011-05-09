@@ -1,0 +1,19 @@
+--- tigase-xmltools-3.3.1-b484.src/build.xml.orig	2008-12-15 23:55:31.000000000 +0100
++++ tigase-xmltools-3.3.1-b484.src/build.xml	2011-05-09 12:29:03.000000000 +0200
+@@ -16,16 +16,6 @@
+ 
+  <target name="prepare-dist" description="Calculate build version">
+   <!-- Get revision number -->
+-  <exec executable="svnversion">
+-   <redirector outputproperty="build-no" errorproperty="error-property">
+-    <outputfilterchain>
+-     <tokenfilter>
+-      <containsregex
+-       pattern="[^0-9]*([0-9]+).*" replace="\1"/>
+-     </tokenfilter>
+-    </outputfilterchain>
+-   </redirector>
+-  </exec>
+   <property name="version" value="${ver}-b${build-no}"/>
+   <property name="dist" value="dist/${projectname}-${jarfile}-${version}"/>
+  </target>
