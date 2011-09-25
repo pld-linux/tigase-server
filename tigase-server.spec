@@ -49,7 +49,7 @@ Requires:	java-tigase-utils
 Requires:	java-tigase-xmltools
 Requires:	jpackage-utils
 Requires:	jre
-Requires:	rc-scripts
+Requires:	rc-scripts >= 0.4.3.0
 Suggests:	java-jdbc-mysql
 Suggests:	postgresql-jdbc
 BuildArch:	noarch
