@@ -14,13 +14,13 @@
 Summary:	Open Source Jabber/XMPP Server
 Name:		tigase-server
 Version:	5.1.0
-%define	build_id 2555
-%define beta	beta2
+%define	build_id 2667
+%define beta	beta3
 Release:	0.%{beta}.0.1
 License:	GPL v3
 Group:		Applications/Communications
-Source0:	https://projects.tigase.org/attachments/download/17/%{name}-%{version}-%{beta}-b%{build_id}.src.tar.gz
-# Source0-md5:	6769b12e74329b5ab854b2b4d542b29a
+Source0:	https://projects.tigase.org/attachments/download/52/%{name}-%{version}-%{beta}-b%{build_id}.src.tar.gz
+# Source0-md5:	c0dd6e8023b4f45559d15a603fcf8e4a
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Source3:	%{name}.upstart
@@ -231,7 +231,7 @@ fi
 %doc package.html scripts/{repo.sh,user_roster.sh}
 %doc etc/{init-mysql.properties,tigase-mysql.conf,tigase-pgsql.conf}
 %dir %{_sysconfdir}/%{name}
-%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/bosh-extra-haders.txt
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/bosh-extra-headers.txt
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/cross-domain-policy.xml
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/init.properties
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/jmx.access
