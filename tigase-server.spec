@@ -191,7 +191,7 @@ install scripts/config.sh $RPM_BUILD_ROOT%{_datadir}/%{name}/bin
 install scripts/derby-db-create.sh $RPM_BUILD_ROOT%{_datadir}/%{name}/bin
 install scripts/machine-check.sh $RPM_BUILD_ROOT%{_datadir}/%{name}/bin
 
-ln -s /var/log/tigase $RPM_BUILD_ROOT%{_datadir}/%{name}/logs
+ln -s /var/log/%{name} $RPM_BUILD_ROOT%{_datadir}/%{name}/logs
 ln -s logs/derby.log $RPM_BUILD_ROOT%{_datadir}/%{name}
 
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
