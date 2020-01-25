@@ -9,7 +9,6 @@
 %bcond_without	source		# don't build source jar
 %bcond_with	tests		# build and run tests
 
-%include	/usr/lib/rpm/macros.java
 
 Summary:	Open Source Jabber/XMPP Server
 Name:		tigase-server
